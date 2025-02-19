@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useCallback, useState } from "react";
+import "./App.css";
+import WebRTCComponent from "./WEBRTCComponent.tsx";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [value, setValue] = useState("");
+
+  let socket: any;
+  // useEffect(() => {
+  //   socket = socket ?? new WebSocket("ws://localhost:3000");
+  //
+  //   // Обработчик для получения сообщений от сервера
+  //   socket.onmessage = (event: any) => {
+  //     const blob = event.data; // Получаем данные как Blob
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       const arrayBuffer = reader.result as ArrayBuffer; // Получаем ArrayBuffer
+  //       const decoder = new TextDecoder("utf-8");
+  //       const message = decoder.decode(arrayBuffer);
+  //       console.log("Received message:", message); // Текстовое сообщение
+  //     };
+  //
+  //     reader.readAsArrayBuffer(blob);
+  //   };
+  // }, []);
+
+  const handelSend = useCallback(
+    (value: string) => {
+      console.log(value);
+      socket.send(JSON.stringify(value));
+    },
+    [socket],
+  );
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
       <h1>Vite + React</h1>
+      <WebRTCComponent />
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <button onClick={() => handelSend(value)}>Send</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
